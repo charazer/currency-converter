@@ -185,14 +185,19 @@ function onInput(event: Event): void {
 
 .control {
   inline-size: 100%;
-  padding: var(--space-2) var(--space-3);
+  block-size: var(--control-md);
+  padding-inline: var(--space-3);
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
-  background: var(--bg);
+  background: var(--sunken);
   font-weight: 600;
   text-align: start;
   text-transform: uppercase;
   cursor: pointer;
+}
+
+.control:hover {
+  border-color: var(--border-strong);
 }
 
 .control:focus {

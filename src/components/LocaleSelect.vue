@@ -51,23 +51,28 @@ function onChange(event: Event): void {
 
 <style scoped>
 .locale {
-  flex: 0 1 auto;
-  min-inline-size: 0;
+  flex: 0 1 14rem;
+  min-inline-size: 3.5rem;
 }
 
 .select {
-  inline-size: 14rem;
-  max-inline-size: 100%;
-  padding: var(--space-1) var(--space-2);
+  inline-size: 100%;
+  block-size: var(--control-sm);
+  /* Room for the native chevron, so a truncated label ellipsises instead of running under it. */
+  padding-inline: var(--space-2) var(--space-6);
+  overflow: hidden;
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
-  background: var(--surface);
+  background: var(--control-bg);
   color: var(--text-muted);
   font-size: var(--font-xs);
+  white-space: nowrap;
+  text-overflow: ellipsis;
   cursor: pointer;
 }
 
 .select:hover {
+  background: var(--control-bg-hover);
   color: var(--text);
 }
 </style>

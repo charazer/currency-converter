@@ -60,6 +60,65 @@ select {
   visibility: hidden;
 }
 
+/* Shared primitives. These live globally rather than in each component because the segmented
+   controls drifted to four different heights when every component styled its own. */
+
+.panel {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.panel-section {
+  padding: var(--panel-pad);
+}
+
+.panel-section + .panel-section {
+  border-block-start: 1px solid var(--border);
+}
+
+.segmented {
+  display: flex;
+  gap: 2px;
+  block-size: var(--control-sm);
+  padding: var(--segment-pad);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--control-bg);
+}
+
+.segment {
+  display: grid;
+  place-items: center;
+  min-inline-size: var(--control-sm);
+  padding-inline: var(--space-2);
+  border: 0;
+  border-radius: var(--radius-xs);
+  background: none;
+  color: var(--text-muted);
+  font-size: var(--font-xs);
+  font-weight: 600;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.segment:hover {
+  background: var(--control-bg-hover);
+  color: var(--text);
+}
+
+.segment[aria-pressed='true'] {
+  background: var(--accent);
+  color: var(--accent-contrast);
+}
+
+@media (width < 30rem) {
+  :root {
+    --panel-pad: var(--space-4);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

@@ -66,17 +66,19 @@ const starred = computed(() => isFavourite(current.value))
 .star {
   display: grid;
   place-items: center;
-  inline-size: 2.25rem;
-  block-size: 2.25rem;
+  flex: none;
+  inline-size: var(--control-sm);
+  block-size: var(--control-sm);
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
-  background: var(--surface);
+  background: var(--control-bg);
   color: var(--text-muted);
   cursor: pointer;
 }
 
 .star[aria-pressed='true'] {
   border-color: var(--accent);
+  background: var(--accent-soft);
   color: var(--accent);
 }
 
@@ -91,11 +93,12 @@ const starred = computed(() => isFavourite(current.value))
 
 .chip {
   display: flex;
+  block-size: var(--control-sm);
   align-items: stretch;
   overflow: hidden;
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
-  background: var(--surface);
+  background: var(--control-bg);
 }
 
 .load,
@@ -103,16 +106,18 @@ const starred = computed(() => isFavourite(current.value))
   border: 0;
   background: none;
   color: var(--text);
-  font-size: var(--font-sm);
+  font-size: var(--font-xs);
   cursor: pointer;
 }
 
 .load {
-  padding: var(--space-2) var(--space-3);
+  padding-inline: var(--space-3);
+  font-weight: 600;
   font-variant-numeric: tabular-nums;
 }
 
 .load:hover {
+  background: var(--control-bg-hover);
   color: var(--accent);
 }
 
@@ -124,6 +129,7 @@ const starred = computed(() => isFavourite(current.value))
 }
 
 .drop:hover {
+  background: var(--control-bg-hover);
   color: var(--danger);
 }
 

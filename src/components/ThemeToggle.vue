@@ -11,11 +11,11 @@ const LABELS: Record<Theme, string> = {
 </script>
 
 <template>
-  <div class="group" role="group" aria-label="Theme">
+  <div class="segmented" role="group" aria-label="Theme">
     <button
       v-for="option in THEMES"
       :key="option"
-      class="option"
+      class="segment option"
       type="button"
       :aria-pressed="theme === option"
       :title="LABELS[option]"
@@ -45,33 +45,7 @@ const LABELS: Record<Theme, string> = {
 </template>
 
 <style scoped>
-.group {
-  display: flex;
-  gap: 2px;
-  padding: 2px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  background: var(--surface);
-}
-
 .option {
-  display: grid;
-  place-items: center;
-  inline-size: 2rem;
-  block-size: 2rem;
-  border: 0;
-  border-radius: calc(var(--radius-sm) - 2px);
-  background: none;
-  color: var(--text-muted);
-  cursor: pointer;
-}
-
-.option:hover {
-  color: var(--text);
-}
-
-.option[aria-pressed='true'] {
-  background: var(--accent);
-  color: var(--accent-contrast);
+  padding-inline: 0;
 }
 </style>

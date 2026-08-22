@@ -95,11 +95,11 @@ function onMove(event: PointerEvent): void {
 <template>
   <section v-if="enabled" class="chart" aria-label="Rate history">
     <header class="head">
-      <div class="ranges" role="group" aria-label="Chart range">
+      <div class="segmented" role="group" aria-label="Chart range">
         <button
           v-for="option in RANGES"
           :key="option.days"
-          class="range"
+          class="segment range"
           type="button"
           :aria-pressed="range === option.days"
           :title="option.name"
@@ -153,7 +153,7 @@ function onMove(event: PointerEvent): void {
 <style scoped>
 .chart {
   display: grid;
-  gap: var(--space-2);
+  gap: var(--space-3);
 }
 
 .head {
@@ -162,31 +162,11 @@ function onMove(event: PointerEvent): void {
   flex-wrap: wrap;
   justify-content: space-between;
   align-items: center;
-}
-
-.ranges {
-  display: flex;
-  gap: 2px;
-  padding: 2px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  background: var(--surface);
+  min-block-size: var(--control-sm);
 }
 
 .range {
-  padding: var(--space-1) var(--space-3);
-  border: 0;
-  border-radius: calc(var(--radius-sm) - 2px);
-  background: none;
-  color: var(--text-muted);
-  font-size: var(--font-xs);
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.range[aria-pressed='true'] {
-  background: var(--accent);
-  color: var(--accent-contrast);
+  padding-inline: var(--space-3);
 }
 
 .readout {
@@ -205,6 +185,12 @@ function onMove(event: PointerEvent): void {
      would fall back to its viewBox aspect ratio and paint over everything below it. */
   display: grid;
   block-size: 4.5rem;
+}
+
+@media (width >= 30rem) {
+  .plotarea {
+    block-size: 6.5rem;
+  }
 }
 
 .state {

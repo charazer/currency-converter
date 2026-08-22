@@ -57,8 +57,8 @@ const secondary = computed(() => {
   display: grid;
   gap: var(--space-1);
   /* Reserved so the secondary line appearing cannot move the chart below it. */
-  min-block-size: 3rem;
-  align-content: start;
+  min-block-size: 2.5rem;
+  align-content: center;
   font-size: var(--font-sm);
   text-align: center;
 }

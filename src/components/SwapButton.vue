@@ -23,20 +23,22 @@ defineEmits<{ swap: [] }>()
 .swap {
   display: grid;
   place-items: center;
-  inline-size: 2.75rem;
-  block-size: 2.75rem;
+  inline-size: var(--control-md);
+  block-size: var(--control-md);
   border: 1px solid var(--border);
-  border-radius: 50%;
-  background: var(--surface);
-  color: var(--text);
+  border-radius: var(--radius-full);
+  background: var(--control-bg);
+  color: var(--text-muted);
   cursor: pointer;
   transition:
     transform 180ms ease,
-    border-color 180ms ease;
+    border-color 180ms ease,
+    color 180ms ease;
 }
 
 .swap:hover:not(:disabled) {
   border-color: var(--accent);
+  background: var(--control-bg-hover);
   color: var(--accent);
 }
 

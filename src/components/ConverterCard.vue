@@ -56,95 +56,110 @@ onUnmounted(() => clearTimeout(announceTimer))
 </script>
 
 <template>
-  <section class="card" aria-label="Currency converter">
-    <div class="row">
-      <AmountField
-        input-id="amount-from"
-        label="From"
-        :model-value="baseAmount"
-        :currency="base"
-        :locale="locale"
-        :disabled="!ready"
-        @update:model-value="setBaseAmount"
-      />
-      <CurrencySelect
-        input-id="currency-from"
-        label="Convert from"
-        :model-value="base"
-        :currencies="currencies"
-        :disabled="currenciesLoading"
-        @update:model-value="setBase"
-      />
-    </div>
+  <div class="stack">
+    <section class="panel" aria-label="Currency converter">
+      <div class="panel-section fields">
+        <div class="row">
+          <AmountField
+            input-id="amount-from"
+            label="From"
+            :model-value="baseAmount"
+            :currency="base"
+            :locale="locale"
+            :disabled="!ready"
+            @update:model-value="setBaseAmount"
+          />
+          <CurrencySelect
+            input-id="currency-from"
+            label="Convert from"
+            :model-value="base"
+            :currencies="currencies"
+            :disabled="currenciesLoading"
+            @update:model-value="setBase"
+          />
+        </div>
 
-    <div class="divider">
-      <SwapButton :disabled="!ready" @swap="swap" />
-    </div>
+        <div class="divider">
+          <SwapButton :disabled="!ready" @swap="swap" />
+        </div>
 
-    <div class="row">
-      <AmountField
-        input-id="amount-to"
-        label="To"
-        :model-value="quoteAmount"
-        :currency="quote"
-        :locale="locale"
-        :disabled="!ready"
-        @update:model-value="setQuoteAmount"
-      />
-      <CurrencySelect
-        input-id="currency-to"
-        label="Convert to"
-        :model-value="quote"
-        :currencies="currencies"
-        :disabled="currenciesLoading"
-        @update:model-value="setQuote"
-      />
-    </div>
-  </section>
+        <div class="row">
+          <AmountField
+            input-id="amount-to"
+            label="To"
+            :model-value="quoteAmount"
+            :currency="quote"
+            :locale="locale"
+            :disabled="!ready"
+            @update:model-value="setQuoteAmount"
+          />
+          <CurrencySelect
+            input-id="currency-to"
+            label="Convert to"
+            :model-value="quote"
+            :currencies="currencies"
+            :disabled="currenciesLoading"
+            @update:model-value="setQuote"
+          />
+        </div>
+      </div>
 
-  <RateNote
-    :base="base"
-    :quote="quote"
-    :rate="rate"
-    :date="date"
-    :locale="locale"
-    :is-loading="isLoading"
-    :is-stale="isStale"
-    :error="error"
-    @retry="refetch()"
-  />
+      <div class="panel-section footer">
+        <RateNote
+          :base="base"
+          :quote="quote"
+          :rate="rate"
+          :date="date"
+          :locale="locale"
+          :is-loading="isLoading"
+          :is-stale="isStale"
+          :error="error"
+          @retry="refetch()"
+        />
+      </div>
+    </section>
 
-  <RateChart :base="base" :quote="quote" :locale="locale" />
+    <section class="panel">
+      <div class="panel-section">
+        <RateChart :base="base" :quote="quote" :locale="locale" />
+      </div>
+      <div class="panel-section">
+        <FavouritePairs
+          :base="base"
+          :quote="quote"
+          @select="(pair) => setPair(pair.base, pair.quote)"
+        />
+      </div>
+    </section>
 
-  <FavouritePairs :base="base" :quote="quote" @select="(pair) => setPair(pair.base, pair.quote)" />
-
-  <p class="sr-only" role="status" aria-live="polite">{{ announcement }}</p>
+    <p class="sr-only" role="status" aria-live="polite">{{ announcement }}</p>
+  </div>
 </template>
 
 <style scoped>
-.card {
+.stack {
   display: grid;
-  padding: var(--space-6);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  background: var(--surface);
-  box-shadow: var(--shadow);
+  gap: var(--space-4);
+}
+
+.fields {
+  display: grid;
+}
+
+.footer {
+  padding-block: var(--space-3);
 }
 
 .row {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 10rem;
+  grid-template-columns: minmax(0, 1fr) 9rem;
   gap: var(--space-4);
   align-items: end;
 }
 
 @media (width < 30rem) {
-  .card {
-    padding: var(--space-4);
-  }
-
   .row {
-    grid-template-columns: minmax(0, 1fr) 7.5rem;
+    grid-template-columns: minmax(0, 1fr) 7rem;
     gap: var(--space-3);
   }
 }
