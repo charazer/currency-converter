@@ -36,7 +36,7 @@ h1 {
   gap: var(--space-4);
   align-content: center;
   justify-self: center;
-  inline-size: min(100%, 28rem);
+  inline-size: min(100%, 40rem);
   padding-block-end: var(--space-8);
 }
 </style>

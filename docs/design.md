@@ -9,7 +9,9 @@
 
 ## Layout
 
-Centred card, max-width `28rem`, vertically centred on desktop, top-aligned on mobile.
+Centred card, max-width `40rem`, vertically centred on desktop, top-aligned on mobile. The amount
+type scales down once a value passes ~11 characters so long figures never reach the field edge. The
+currency listbox is wider than its trigger and flips above it when there is no room below.
 
 ```
  [ Currency Converter        ☆  ◑ ]

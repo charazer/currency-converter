@@ -41,6 +41,14 @@ const hint = ref<ParseFailure | null>(null)
 /** Set when this component caused the model change, so the echo does not fight the caret. */
 const selfEdited = ref(false)
 
+/** Long amounts would otherwise run past the edge of the field. */
+const COMFORTABLE_LENGTH = 11
+const scale = computed(() => {
+  const { length } = displayed.value
+  if (length <= COMFORTABLE_LENGTH) return 1
+  return Math.max(0.55, COMFORTABLE_LENGTH / length)
+})
+
 watch([() => props.modelValue, symbols], () => {
   if (selfEdited.value) {
     selfEdited.value = false
@@ -105,6 +113,7 @@ function onBlur(): void {
       autocorrect="off"
       autocapitalize="off"
       spellcheck="false"
+      :style="{ '--amount-scale': scale }"
       :value="displayed"
       :disabled="disabled"
       :placeholder="readonlyHint"
@@ -135,7 +144,7 @@ function onBlur(): void {
   padding: 0;
   border: 0;
   background: none;
-  font-size: var(--font-xl);
+  font-size: calc(var(--font-amount) * var(--amount-scale, 1));
   font-weight: 600;
   letter-spacing: -0.01em;
 }

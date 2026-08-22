@@ -16,8 +16,12 @@ const emit = defineEmits<{ 'update:modelValue': [string] }>()
 const open = ref(false)
 const query = ref('')
 const activeIndex = ref(0)
+const dropUp = ref(false)
 const input = useTemplateRef<HTMLInputElement>('input')
 const list = useTemplateRef<HTMLUListElement>('list')
+
+/** Keep in sync with the listbox `max-block-size`. */
+const LIST_MAX_HEIGHT = 288
 
 const filtered = computed(() => {
   const needle = query.value.trim().toLowerCase()
@@ -47,6 +51,12 @@ function show(): void {
     props.currencies.findIndex((currency) => currency.code === props.modelValue),
     0,
   )
+
+  const rect = input.value?.getBoundingClientRect()
+  if (rect !== undefined) {
+    const below = window.innerHeight - rect.bottom
+    dropUp.value = below < LIST_MAX_HEIGHT && rect.top > below
+  }
 }
 
 function hide(): void {
@@ -144,6 +154,7 @@ function onInput(event: Event): void {
       :id="`${inputId}-listbox`"
       ref="list"
       class="listbox"
+      :class="{ 'listbox--up': dropUp }"
       role="listbox"
       :aria-label="label"
     >
@@ -191,9 +202,14 @@ function onInput(event: Event): void {
 .listbox {
   position: absolute;
   z-index: 10;
-  inset-inline: 0;
+  /* Anchored to the trigger's right edge so it can grow leftwards past its own width. */
+  inset-inline-start: auto;
+  inset-inline-end: 0;
   inset-block-start: calc(100% + var(--space-1));
-  max-block-size: 16rem;
+  inline-size: max-content;
+  min-inline-size: 100%;
+  max-inline-size: min(22rem, calc(100vw - 2 * var(--space-4)));
+  max-block-size: 18rem;
   margin: 0;
   padding: var(--space-1);
   overflow-y: auto;
@@ -202,6 +218,11 @@ function onInput(event: Event): void {
   background: var(--surface);
   box-shadow: var(--shadow);
   list-style: none;
+}
+
+.listbox--up {
+  inset-block-start: auto;
+  inset-block-end: calc(100% + var(--space-1));
 }
 
 .option {
@@ -224,6 +245,7 @@ function onInput(event: Event): void {
 }
 
 .code {
+  flex: 0 0 2.75rem;
   font-weight: 600;
 }
 

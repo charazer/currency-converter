@@ -15,6 +15,7 @@
   --font-md: 1rem;
   --font-lg: 1.25rem;
   --font-xl: clamp(1.75rem, 1.2rem + 2.5vw, 2.25rem);
+  --font-amount: clamp(1.5rem, 1.1rem + 2vw, 2.5rem);
 
   --radius-sm: 0.5rem;
   --radius-md: 0.75rem;

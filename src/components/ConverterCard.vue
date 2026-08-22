@@ -117,7 +117,7 @@ onUnmounted(() => clearTimeout(announceTimer))
 <style scoped>
 .card {
   display: grid;
-  padding: var(--space-5);
+  padding: var(--space-6);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   background: var(--surface);
@@ -126,9 +126,20 @@ onUnmounted(() => clearTimeout(announceTimer))
 
 .row {
   display: grid;
-  grid-template-columns: 1fr 7.5rem;
+  grid-template-columns: minmax(0, 1fr) 10rem;
   gap: var(--space-4);
   align-items: end;
+}
+
+@media (width < 30rem) {
+  .card {
+    padding: var(--space-4);
+  }
+
+  .row {
+    grid-template-columns: minmax(0, 1fr) 7.5rem;
+    gap: var(--space-3);
+  }
 }
 
 .divider {
