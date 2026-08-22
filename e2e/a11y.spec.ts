@@ -59,7 +59,7 @@ test('is fully operable from the keyboard', async ({ page }) => {
   await expect(page.locator('#amount-to')).toHaveValue('1.16')
 
   const order: string[] = []
-  for (let step = 0; step < 8; step += 1) {
+  for (let step = 0; step < 12; step += 1) {
     await page.keyboard.press('Tab')
     order.push(
       await page.evaluate(

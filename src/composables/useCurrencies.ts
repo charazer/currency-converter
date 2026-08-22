@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/vue-query'
-import { computed, toValue, type MaybeRefOrGetter } from 'vue'
+import { computed } from 'vue'
 
 import { currenciesQuery } from '@/api/queries'
 
@@ -18,9 +18,4 @@ export function useCurrencies() {
     error: query.error,
     refetch: query.refetch,
   }
-}
-
-export function useCurrency(code: MaybeRefOrGetter<string>) {
-  const { byCode } = useCurrencies()
-  return computed(() => byCode.value.get(toValue(code)) ?? null)
 }

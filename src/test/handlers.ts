@@ -2,7 +2,7 @@ import { http, HttpResponse } from 'msw'
 
 import { API_BASE } from '@/api/frankfurter'
 
-export const currenciesFixture = [
+const currenciesFixture = [
   {
     iso_code: 'EUR',
     iso_numeric: '978',
@@ -29,20 +29,20 @@ export const currenciesFixture = [
   },
 ]
 
-export const ratesFixture = [
+const ratesFixture = [
   { date: '2026-08-21', base: 'EUR', quote: 'EUR', rate: 1.0 },
   { date: '2026-08-21', base: 'EUR', quote: 'JPY', rate: 170.31 },
   { date: '2026-08-21', base: 'EUR', quote: 'USD', rate: 1.1568 },
 ]
 
-export const historyFixture = [
+const historyFixture = [
   { date: '2026-08-19', base: 'EUR', quote: 'USD', rate: 1.1502 },
   { date: '2026-08-21', base: 'EUR', quote: 'USD', rate: 1.1568 },
   { date: '2026-08-20', base: 'EUR', quote: 'USD', rate: 1.1533 },
 ]
 
 /** The API serves any base; the fixture is EUR-based, so cross rates are derived from it. */
-export function ratesFor(base: string) {
+function ratesFor(base: string) {
   const anchor = ratesFixture.find((entry) => entry.quote === base)
   if (anchor === undefined) return []
   return ratesFixture.map((entry) => ({

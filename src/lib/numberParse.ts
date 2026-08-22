@@ -17,7 +17,7 @@ export type ParseFailure =
 export type ParseResult = { ok: true; value: CanonicalAmount } | { ok: false; reason: ParseFailure }
 
 /** Beyond this, IEEE-754 display and most currency inputs stop being meaningful. */
-export const MAX_DIGITS = 15
+const MAX_DIGITS = 15
 
 /** Separators people actually paste, on top of whatever the locale itself uses. */
 const ALWAYS_DECIMAL_CANDIDATES = new Set(['.', ',', '\u066B'])

@@ -205,3 +205,28 @@ test('does not overflow horizontally at 200% zoom', async ({ page }) => {
   }))
   expect(overflow.scrollWidth).toBeLessThanOrEqual(overflow.clientWidth)
 })
+
+test('reformats amounts when the number format is changed', async ({ page }) => {
+  await page.goto('/currency-converter/')
+  await expect(page.locator('#amount-to')).toHaveValue('1.16')
+
+  const from = page.locator('#amount-from')
+  await from.fill('')
+  await from.pressSequentially('1234567')
+  await expect(from).toHaveValue('1,234,567')
+
+  await page.locator('#locale').selectOption('de-DE')
+  await expect(from).toHaveValue('1.234.567')
+
+  // Indian grouping is 3;2;2, the case that motivates the picker.
+  await page.locator('#locale').selectOption('en-IN')
+  await expect(from).toHaveValue('12,34,567')
+
+  // The amount itself is not persisted, but the chosen format must be.
+  await page.reload()
+  await expect(page.locator('#locale')).toHaveValue('en-IN')
+  const reloaded = page.locator('#amount-from')
+  await reloaded.fill('')
+  await reloaded.pressSequentially('1234567')
+  await expect(reloaded).toHaveValue('12,34,567')
+})

@@ -18,10 +18,10 @@ Live: https://charazer.github.io/currency-converter/
 
 ## Status
 
-Feature complete. See [PLAN.md](PLAN.md) and [docs/](docs/) for the design notes.
+Feature complete.
 
 Lighthouse scores 100 for performance, accessibility, best practices and SEO. The suite covers
-293 unit tests plus 44 end-to-end tests on Chromium and WebKit, including an axe-core audit,
+300 unit tests plus 46 end-to-end tests on Chromium and WebKit, including an axe-core audit,
 layout-stability and content-security-policy checks.
 
 ## Prerequisites

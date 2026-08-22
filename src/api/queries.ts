@@ -5,7 +5,7 @@ import { fetchCurrencies, fetchHistory, fetchRateTable } from './frankfurter'
 const HOUR = 60 * 60 * 1000
 const DAY = 24 * HOUR
 
-export const queryKeys = {
+const queryKeys = {
   currencies: ['currencies'] as const,
   rateTable: (base: string) => ['rates', base] as const,
   history: (base: string, quote: string, from: string, to: string) =>

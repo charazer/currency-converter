@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import ConverterCard from '@/components/ConverterCard.vue'
+import LocaleSelect from '@/components/LocaleSelect.vue'
 import ThemeToggle from '@/components/ThemeToggle.vue'
 </script>
 
@@ -7,7 +8,10 @@ import ThemeToggle from '@/components/ThemeToggle.vue'
   <div class="shell">
     <header class="head">
       <h1>Currency Converter</h1>
-      <ThemeToggle />
+      <div class="tools">
+        <LocaleSelect />
+        <ThemeToggle />
+      </div>
     </header>
     <main class="main">
       <ConverterCard />
@@ -26,9 +30,19 @@ import ThemeToggle from '@/components/ThemeToggle.vue'
 .head {
   display: flex;
   gap: var(--space-3);
+  flex-wrap: wrap;
   justify-content: space-between;
   align-items: center;
   padding-block: var(--space-3);
+}
+
+.tools {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  align-items: center;
+  min-inline-size: 0;
 }
 
 h1 {

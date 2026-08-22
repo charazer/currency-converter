@@ -1,12 +1,12 @@
 import type { Page } from '@playwright/test'
 
-export const CURRENCIES = [
+const CURRENCIES = [
   { iso_code: 'EUR', iso_numeric: '978', name: 'Euro', symbol: '€' },
   { iso_code: 'JPY', iso_numeric: '392', name: 'Japanese Yen', symbol: '¥' },
   { iso_code: 'USD', iso_numeric: '840', name: 'United States Dollar', symbol: '$' },
 ]
 
-export const EUR_RATES: Record<string, number> = { EUR: 1, JPY: 170.31, USD: 1.1568 }
+const EUR_RATES: Record<string, number> = { EUR: 1, JPY: 170.31, USD: 1.1568 }
 
 /** Keeps the suite deterministic and independent of the live service. */
 export async function mockApi(page: Page): Promise<void> {
