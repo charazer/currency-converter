@@ -8,6 +8,7 @@ import { getStorage, storageKeys } from './storage'
 
 const MAX_RETRIES = 2
 const CACHE_MAX_AGE = 7 * 24 * 60 * 60 * 1000
+const PERSIST_THROTTLE = 0
 
 /** Bump to discard persisted caches whose shape no longer matches the code. */
 const CACHE_BUSTER = 'v1'
@@ -28,18 +29,26 @@ export function createAppQueryClient(): QueryClient {
 }
 
 /** Lets a cold, offline load render the last known rates instead of an error. */
-export function persistQueryCache(queryClient: QueryClient): void {
+export async function persistQueryCache(queryClient: QueryClient): Promise<void> {
   const storage = getStorage()
   if (storage === null) return
 
   const [, restored] = persistQueryClient({
     queryClient,
-    persister: createSyncStoragePersister({ storage, key: storageKeys.queryCache }),
+    persister: createSyncStoragePersister({
+      storage,
+      key: storageKeys.queryCache,
+      // The default 1s throttle loses the cache if the tab closes right after load. The payload is a
+      // couple of kB and only changes on a fetch, so writing eagerly costs nothing.
+      throttleTime: PERSIST_THROTTLE,
+    }),
     maxAge: CACHE_MAX_AGE,
     buster: CACHE_BUSTER,
   })
 
-  void restored.catch(() => {
+  try {
+    await restored
+  } catch {
     // a corrupt or unreadable cache just means we start cold
-  })
+  }
 }

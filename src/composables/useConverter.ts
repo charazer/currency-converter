@@ -1,5 +1,6 @@
 import { computed, ref, watch } from 'vue'
-import { z } from 'zod'
+
+import { z } from '@/lib/zod'
 
 import { convertToCanonical } from '@/lib/convert'
 import { defaultPair } from '@/lib/localeCurrency'

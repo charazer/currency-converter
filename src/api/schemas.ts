@@ -1,4 +1,4 @@
-import { z } from 'zod'
+import { z } from '@/lib/zod'
 
 export const CURRENCY_CODE_PATTERN = /^[A-Z]{3}$/
 export const ISO_DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/

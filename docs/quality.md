@@ -20,13 +20,14 @@ Lint rules that matter: no `any`, no floating promises, exhaustive switch, no un
 
 ## Testing
 
-| Level     | Tool                                         | Target                                                                                                                            |
-| --------- | -------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
-| Unit      | Vitest                                       | `lib/*` — parser, formatter, converter. **The formatting engine is the priority: ≥95% coverage, table-driven across ≥8 locales.** |
-| Component | Vitest + `@vue/test-utils` + Testing Library | `AmountField`, `CurrencySelect` — typing, caret, keyboard nav                                                                     |
-| Contract  | Vitest + MSW                                 | Zod schemas vs recorded Frankfurter fixtures; one opt-in live test (`TEST_LIVE=1`) to catch API drift                             |
-| E2E       | Playwright (Chromium + WebKit)               | Convert, swap, reload persistence, offline, dark mode                                                                             |
-| A11y      | `@axe-core/playwright`                       | Zero critical violations on the main view                                                                                         |
+| Level     | Tool                                         | Target                                                                                                                                                                      |
+| --------- | -------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Unit      | Vitest                                       | `lib/*` — parser, formatter, converter. **The formatting engine is the priority: ≥95% coverage, table-driven across ≥8 locales.**                                           |
+| Component | Vitest + `@vue/test-utils` + Testing Library | `AmountField`, `CurrencySelect` — typing, caret, keyboard nav                                                                                                               |
+| Contract  | Vitest + MSW                                 | Zod schemas vs recorded Frankfurter fixtures; one opt-in live test (`TEST_LIVE=1`) to catch API drift                                                                       |
+| E2E       | Playwright (Chromium + WebKit)               | Convert, swap, reload persistence, offline, dark mode                                                                                                                       |
+| A11y      | `@axe-core/playwright`                       | Zero violations across WCAG 2.0/2.1/2.2 A and AA, on the loaded view, with the listbox open, in dark theme and in the error state. Plus tab order and focus-visible checks. |
+| Security  | Playwright                                   | Zero `securitypolicyviolation` events — a blocked `eval` is swallowed by the library that tried it, so only an explicit check catches it                                    |
 
 Formatting test matrix: `en-US`, `de-DE`, `fr-FR` (NBSP), `en-IN` (lakh grouping), `de-CH` (`'`),
 `ja-JP` (0 decimals), `ar-EG` (Eastern Arabic digits), `pt-BR`. Cases per locale: empty, `0`,
@@ -34,6 +35,12 @@ trailing separator, trailing zeros, paste with wrong separators, caret position 
 
 No snapshot tests for anything locale-dependent — assert semantics, not strings, except in the
 explicit formatting matrix.
+
+## Verified
+
+Lighthouse (production build, headless Chrome): performance, accessibility, best practices and SEO
+all 100. Re-run with `pnpm run preview` and
+`CHROME_PATH=<playwright chrome> pnpm dlx lighthouse@12 <url> --only-categories=…`.
 
 ## CI (`.github/workflows/ci.yml`)
 

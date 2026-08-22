@@ -55,6 +55,11 @@ select {
   border: 0;
 }
 
+/* Hidden but still occupying its space, so surrounding content cannot move. */
+.is-invisible {
+  visibility: hidden;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

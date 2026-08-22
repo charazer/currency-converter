@@ -1,5 +1,6 @@
 import { computed, ref, watch } from 'vue'
-import { z } from 'zod'
+
+import { z } from '@/lib/zod'
 
 import { readStored, storageKeys, writeStored } from '@/lib/storage'
 

@@ -1,61 +1,10 @@
-import { expect, test, type Page } from '@playwright/test'
+import { expect, test } from '@playwright/test'
 
-const CURRENCIES = [
-  { iso_code: 'EUR', iso_numeric: '978', name: 'Euro', symbol: '€' },
-  { iso_code: 'JPY', iso_numeric: '392', name: 'Japanese Yen', symbol: '¥' },
-  { iso_code: 'USD', iso_numeric: '840', name: 'United States Dollar', symbol: '$' },
-]
-
-const EUR_RATES: Record<string, number> = { EUR: 1, JPY: 170.31, USD: 1.1568 }
-
-/** Keeps the suite deterministic and independent of the live service. */
-async function mockApi(page: Page): Promise<void> {
-  await page.route('https://api.frankfurter.dev/v2/**', async (route) => {
-    const url = new URL(route.request().url())
-
-    if (url.pathname.endsWith('/currencies')) {
-      await route.fulfill({ json: CURRENCIES })
-      return
-    }
-
-    const base = url.searchParams.get('base') ?? 'EUR'
-    const anchor = EUR_RATES[base] ?? 1
-
-    const from = url.searchParams.get('from')
-    if (from !== null) {
-      const quote = url.searchParams.get('quotes') ?? 'USD'
-      const start = (EUR_RATES[quote] ?? 1) / anchor
-      await route.fulfill({
-        json: Array.from({ length: 12 }, (_, index) => ({
-          date: `2026-08-${String(index + 10).padStart(2, '0')}`,
-          base,
-          quote,
-          rate: start * (1 + index * 0.001),
-        })),
-      })
-      return
-    }
-
-    await route.fulfill({
-      json: Object.entries(EUR_RATES).map(([quote, rate]) => ({
-        date: '2026-08-21',
-        base,
-        quote,
-        rate: rate / anchor,
-      })),
-    })
-  })
-}
+import { mockApi, seedPair } from './fixtures'
 
 test.beforeEach(async ({ page }) => {
   await mockApi(page)
-  // Without this the pair is guessed from the browser locale. Seeded only when absent, so the
-  // reload test can still observe what the app itself persisted.
-  await page.addInitScript(() => {
-    if (window.localStorage.getItem('cc:pair') === null) {
-      window.localStorage.setItem('cc:pair', JSON.stringify({ base: 'EUR', quote: 'USD' }))
-    }
-  })
+  await seedPair(page)
 })
 
 test('converts between currencies on load', async ({ page }) => {
@@ -230,4 +179,29 @@ test('switches theme and remembers it', async ({ page }) => {
 
   await page.getByRole('button', { name: 'Match system theme' }).click()
   await expect(page.locator('html')).not.toHaveAttribute('data-theme', /.*/)
+})
+
+test('shows the last known rates when the service is unreachable', async ({ page }) => {
+  await page.goto('/currency-converter/')
+  await expect(page.getByText('1 EUR = 1.1568 USD')).toBeVisible()
+
+  // Simulate being offline: every API call now fails.
+  await page.route('https://api.frankfurter.dev/v2/**', (route) => route.abort('failed'))
+  await page.reload()
+
+  await expect(page.getByText('1 EUR = 1.1568 USD')).toBeVisible()
+  await expect(page.locator('#amount-to')).toHaveValue('1.16')
+})
+
+test('does not overflow horizontally at 200% zoom', async ({ page }) => {
+  // 320 CSS px is roughly a 640px window at 200% zoom.
+  await page.setViewportSize({ width: 320, height: 800 })
+  await page.goto('/currency-converter/')
+  await expect(page.locator('#amount-to')).toHaveValue('1.16')
+
+  const overflow = await page.evaluate(() => ({
+    scrollWidth: document.documentElement.scrollWidth,
+    clientWidth: document.documentElement.clientWidth,
+  }))
+  expect(overflow.scrollWidth).toBeLessThanOrEqual(overflow.clientWidth)
 })

@@ -5,9 +5,24 @@ the thing most converters get wrong. Built on the free [Frankfurter](https://fra
 
 Live: https://charazer.github.io/currency-converter/
 
+## Features
+
+- **Digit grouping as you type**, in the input itself, with the caret held in place. Separator
+  placement comes from `Intl`, so Indian lakh grouping (`12,34,567.89`) and non-Latin numbering
+  systems (`١٬٢٣٤٬٥٦٧٫٨٩`) work without special cases.
+- Both amount fields are editable and convert in either direction.
+- Rounding to each currency's real minor units — 0 for yen, 3 for dinar — with `decimal.js` doing
+  the arithmetic, never floats.
+- 30/90/365-day rate history, favourite pairs, and a light/dark/system theme.
+- Works offline against the last rates it saw, clearly labelled as such.
+
 ## Status
 
-Milestone 1 (scaffold). See [PLAN.md](PLAN.md) and [docs/](docs/) for the full plan.
+Feature complete. See [PLAN.md](PLAN.md) and [docs/](docs/) for the design notes.
+
+Lighthouse scores 100 for performance, accessibility, best practices and SEO. The suite covers
+293 unit tests plus 44 end-to-end tests on Chromium and WebKit, including an axe-core audit,
+layout-stability and content-security-policy checks.
 
 ## Prerequisites
 
@@ -40,4 +55,8 @@ For E2E tests, install browsers once: `pnpm exec playwright install chromium web
 
 ## Tech stack
 
-TypeScript · Vue 3 · Vite · Vitest · Playwright · ESLint + Prettier · plain CSS (no UI library)
+TypeScript · Vue 3 · Vite · TanStack Query · Zod · decimal.js · Vitest · Playwright · axe-core ·
+ESLint + Prettier · plain CSS (no UI or component library)
+
+Rates come from [Frankfurter](https://frankfurter.dev), which needs no API key. Nothing is sent
+anywhere else: no accounts, no analytics, no cookies.
