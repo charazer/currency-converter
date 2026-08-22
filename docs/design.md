@@ -33,7 +33,7 @@ Single column throughout; the swap control sits on the divider between the two f
 - Type: system font stack; `font-variant-numeric: tabular-nums` on every number.
   Scale `0.75 / 0.875 / 1 / 1.25 / 2.25rem`; amounts at the top of the scale, `clamp()`ed for mobile.
 - Space: 4px base, `--space-1..8`. Radius `--radius-sm|md|lg` (8/12/16px). One soft shadow only.
-- Dark mode is the *default* if the system prefers it; both themes get real contrast checks.
+- Dark mode is the _default_ if the system prefers it; both themes get real contrast checks.
 
 ## Interaction
 

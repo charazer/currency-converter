@@ -19,7 +19,7 @@ derived from `Intl.NumberFormat(locale, {style:'currency', currency}).resolvedOp
 **Live grouping while typing** — the input is a text field, not `type="number"`:
 
 - On every keystroke: strip group separators, validate against the locale grammar, reformat the
-  integer part with group separators, leave the fraction part *exactly as typed*.
+  integer part with group separators, leave the fraction part _exactly as typed_.
 - Preserve a trailing decimal separator and trailing zeros while the field has focus
   (`1.` and `1.50` must not be eaten). Normalise to full precision on blur.
 - Restore the caret by counting significant digits before it, not raw string offset.
@@ -42,12 +42,12 @@ persisted to `localStorage`.
 
 ## Extras
 
-| Feature | Behaviour |
-| --- | --- |
-| Currency select | Searchable combobox over code + name; matches on either; favourites pinned on top |
-| Favourites | Star toggles the current pair; list of ≤8, click to load, persisted |
-| Chart | 30 / 90 / 365-day toggle, `GET /rates?from&to`, SVG line, min/max/current labels, hover readout |
-| Theme | `light` / `dark` / `system`, persisted, `color-scheme` + `prefers-color-scheme` |
+| Feature         | Behaviour                                                                                       |
+| --------------- | ----------------------------------------------------------------------------------------------- |
+| Currency select | Searchable combobox over code + name; matches on either; favourites pinned on top               |
+| Favourites      | Star toggles the current pair; list of ≤8, click to load, persisted                             |
+| Chart           | 30 / 90 / 365-day toggle, `GET /rates?from&to`, SVG line, min/max/current labels, hover readout |
+| Theme           | `light` / `dark` / `system`, persisted, `color-scheme` + `prefers-color-scheme`                 |
 
 ## States
 
