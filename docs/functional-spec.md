@@ -25,7 +25,12 @@ derived from `Intl.NumberFormat(locale, {style:'currency', currency}).resolvedOp
 - Restore the caret by counting significant digits before it, not raw string offset.
 - Accept both `.` and `,` as decimal separator on input regardless of locale, plus space/NBSP/`'`
   as ignorable group separators. Ambiguity (`1,234`) resolves to the locale's own rule.
-- Reject: multiple decimal separators, letters, more than one leading zero, `-` (no negative money).
+- Reject: multiple decimal separators, letters, `-` (no negative money), and any keystroke that
+  would push the value past 15 digits (the field simply refuses it and the UI shows a hint).
+- Leading zeros are **preserved while typing** and normalised on blur. Rejecting them mid-keystroke
+  would block a user who types `0` before `1`.
+- Parsing never adds or removes digits, only reinterprets separators. This invariant is what makes
+  caret restoration exact.
 - Locale-aware output only via `Intl` — never hand-roll separator tables.
 - Handle non-Latin numbering systems (`ar-EG` ٫ / `hi-IN-u-nu-deva`) by mapping digits through the
   locale's `formatToParts` output; and Indian grouping (`en-IN` → `12,34,567.89`) comes free with `Intl`.
@@ -38,7 +43,7 @@ persisted to `localStorage`.
 - All conversion via `Decimal`: `target = amount.times(rate)`, round half-up to the target
   currency's minor units for display; keep full precision in state.
 - Rates display with 4–6 significant decimals, never truncated to 2.
-- Very large inputs: cap at 15 significant digits, show a subtle hint instead of silently mangling.
+- Very large inputs: capped at 15 digits; the keystroke is refused rather than silently mangled.
 
 ## Extras
 
