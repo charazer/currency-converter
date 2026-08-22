@@ -1,4 +1,7 @@
 allowBuilds:
   esbuild: true
+  # msw's postinstall only writes the browser service worker; we intercept in Node.
+  msw: false
+  vue-demi: true
 pmOnFail: error
 minimumReleaseAge: 4320

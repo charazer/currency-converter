@@ -15,10 +15,12 @@ export default defineConfig({
   test: {
     environment: 'happy-dom',
     include: ['src/**/*.spec.ts'],
+    setupFiles: ['src/test/setup.ts'],
     globals: false,
     coverage: {
       provider: 'v8',
-      include: ['src/lib/**', 'src/composables/**'],
+      include: ['src/lib/**', 'src/composables/**', 'src/api/**'],
+      exclude: ['src/**/*.spec.ts'],
       reporter: ['text', 'lcov'],
     },
   },

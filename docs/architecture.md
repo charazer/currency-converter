@@ -22,18 +22,20 @@ No UI component library — the app is ~6 components; a library would outweigh t
 
 ```
 src/
-  api/            frankfurter.ts (fetch + Zod schemas), types.ts
+  api/            frankfurter.ts (client), schemas.ts (Zod), errors.ts, queries.ts, types.ts
   composables/    useRates.ts, useCurrencies.ts, useLocale.ts, useTheme.ts, useFavourites.ts
-  lib/            numberFormat.ts, numberParse.ts, convert.ts, storage.ts
+  lib/            numberFormat.ts, numberParse.ts, convert.ts, storage.ts, queryClient.ts
   components/     ConverterCard.vue, AmountField.vue, CurrencySelect.vue,
                   SwapButton.vue, RateChart.vue, RateNote.vue, ThemeToggle.vue
   stores/         converter.ts
   styles/         tokens.css, base.css
+  test/           setup.ts, handlers.ts (MSW)
   App.vue  main.ts
-docs/  tests/e2e/  .github/workflows/
+docs/  e2e/  .github/workflows/
 ```
 
 Rule: `lib/` is pure and framework-free (fully unit-testable), `composables/` bind it to Vue.
+Tests sit next to their subject as `*.spec.ts`.
 
 ## Data layer
 
@@ -47,9 +49,15 @@ Base: `https://api.frankfurter.dev/v2`
 | History               | `GET /rates?base=X&quotes=Y&from=…&to=…`                                            |
 
 - Fetch **all quotes for the selected base** in one call, not per-pair — one request covers a swap
-  and any target change.
-- `Rate.rate` is a JSON number; convert to `Decimal` immediately on parse.
-- Errors to handle explicitly: `404` (unknown code), `422` (bad params/range), `503`, network offline.
+  and any target change. `fetchRateTable` collapses the row array into `{ base, date, rates }`.
+- Rates stay plain `number` through the client and the query cache so the cache stays
+  JSON-serialisable; `Decimal` is constructed at the conversion boundary in `lib/convert.ts`.
+  Doubles represent the API's ~6-significant-digit rates exactly, so nothing is lost.
+- Currency codes are regex-validated before they reach a URL; malformed input fails before a
+  request is made.
+- Errors are normalised to `ApiError` with a `kind` of `not-found` (404), `invalid-request`
+  (400/422), `unavailable` (5xx), `network` (fetch threw) or `malformed` (schema mismatch).
+  Only `network` and `unavailable` are `retryable`; aborts propagate untouched.
 
 ## Caching
 

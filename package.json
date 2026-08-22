@@ -29,7 +29,12 @@
     "test:e2e:report": "playwright show-report"
   },
   "dependencies": {
-    "vue": "^3.5.41"
+    "@tanstack/query-persist-client-core": "5.101.4",
+    "@tanstack/query-sync-storage-persister": "5.101.4",
+    "@tanstack/vue-query": "5.101.4",
+    "decimal.js-light": "2.5.1",
+    "vue": "^3.5.41",
+    "zod": "4.4.3"
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",
@@ -48,6 +53,7 @@
     "eslint-plugin-vuejs-accessibility": "^2.6.0",
     "happy-dom": "^20.11.2",
     "jiti": "2.7.0",
+    "msw": "2.15.0",
     "prettier": "^3.9.6",
     "typescript": "^6.0.3",
     "typescript-eslint": "^8.67.0",
