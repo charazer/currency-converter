@@ -26,7 +26,7 @@ Out: multi-target conversion, PWA install, accounts, fees/spreads, crypto, i18n 
 2. ~~**Data layer** — typed Frankfurter client, Zod validation, TanStack Query, cache.~~ ✅
 3. ~~**Formatting core** — `useLocaleNumber` parse/format engine + unit tests.~~ ✅
 4. ~~**Converter UI** — currency pickers, amount inputs, swap, live conversion.~~ ✅
-5. **Extras** — chart, favourites, theme, last-updated/stale indicator.
+5. ~~**Extras** — chart, favourites, theme, last-updated/stale indicator.~~ ✅
 6. **Polish** — a11y pass, Lighthouse, error/empty/offline states, README.
 
 ## Decisions

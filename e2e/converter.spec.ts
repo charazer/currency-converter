@@ -20,6 +20,22 @@ async function mockApi(page: Page): Promise<void> {
 
     const base = url.searchParams.get('base') ?? 'EUR'
     const anchor = EUR_RATES[base] ?? 1
+
+    const from = url.searchParams.get('from')
+    if (from !== null) {
+      const quote = url.searchParams.get('quotes') ?? 'USD'
+      const start = (EUR_RATES[quote] ?? 1) / anchor
+      await route.fulfill({
+        json: Array.from({ length: 12 }, (_, index) => ({
+          date: `2026-08-${String(index + 10).padStart(2, '0')}`,
+          base,
+          quote,
+          rate: start * (1 + index * 0.001),
+        })),
+      })
+      return
+    }
+
     await route.fulfill({
       json: Object.entries(EUR_RATES).map(([quote, rate]) => ({
         date: '2026-08-21',
@@ -130,4 +146,88 @@ test('reports a failure and recovers on retry', async ({ page }) => {
   await mockApi(page)
   await page.getByRole('button', { name: 'Retry' }).click()
   await expect(page.getByText('1 EUR = 1.1568 USD')).toBeVisible()
+})
+
+test('plots the rate history and switches range', async ({ page }) => {
+  await page.goto('/currency-converter/')
+
+  const plot = page.locator('svg.plot')
+  await expect(plot).toBeVisible()
+  await expect(plot).toHaveAttribute('aria-label', /EUR to USD/)
+
+  await page.getByRole('button', { name: /Last year/ }).click()
+  await expect(page.getByRole('button', { name: /Last year/ })).toHaveAttribute(
+    'aria-pressed',
+    'true',
+  )
+  await expect(plot).toBeVisible()
+})
+
+test('does not shift the layout while history loads', async ({ page }) => {
+  let holdHistory = true
+  // Stall the 1Y request so the loading state is observable rather than a race.
+  await page.route('https://api.frankfurter.dev/v2/rates?*from=*', async (route) => {
+    while (holdHistory) await new Promise((resolve) => setTimeout(resolve, 50))
+    await route.fallback()
+  })
+
+  await page.goto('/currency-converter/')
+  await expect(page.locator('#amount-to')).toHaveValue('1.16')
+
+  const chart = page.locator('section[aria-label="Rate history"]')
+  const card = page.locator('section[aria-label="Currency converter"]')
+
+  // Measured while the very first history request is still in flight.
+  const loadingChart = await chart.boundingBox()
+  const loadingCard = await card.boundingBox()
+
+  holdHistory = false
+  await expect(page.locator('svg.plot')).toBeVisible()
+
+  expect((await chart.boundingBox())?.height).toBe(loadingChart?.height)
+  expect((await card.boundingBox())?.y).toBe(loadingCard?.y)
+
+  // Switching range must not blank the chart, so nothing can move.
+  holdHistory = true
+  await page.getByRole('button', { name: /Last year/ }).click()
+  await expect(page.locator('svg.plot')).toBeVisible()
+  expect((await chart.boundingBox())?.height).toBe(loadingChart?.height)
+  expect((await card.boundingBox())?.y).toBe(loadingCard?.y)
+  holdHistory = false
+})
+
+test('saves and reloads a favourite pair', async ({ page }) => {
+  await page.goto('/currency-converter/')
+  await expect(page.locator('#amount-to')).toHaveValue('1.16')
+
+  await page.getByRole('button', { name: /Save EUR to USD/ }).click()
+  await expect(page.getByRole('button', { name: 'EUR → USD' })).toBeVisible()
+
+  await page.getByRole('button', { name: 'Swap currencies' }).click()
+  await expect(page.getByText('1 USD =')).toBeVisible()
+
+  await page.getByRole('button', { name: 'EUR → USD' }).click()
+  await expect(page.getByText('1 EUR = 1.1568 USD')).toBeVisible()
+})
+
+test('keeps favourites across a reload', async ({ page }) => {
+  await page.goto('/currency-converter/')
+  await page.getByRole('button', { name: /Save EUR to USD/ }).click()
+  await expect(page.getByRole('button', { name: 'EUR → USD' })).toBeVisible()
+
+  await page.reload()
+  await expect(page.getByRole('button', { name: 'EUR → USD' })).toBeVisible()
+})
+
+test('switches theme and remembers it', async ({ page }) => {
+  await page.goto('/currency-converter/')
+
+  await page.getByRole('button', { name: 'Dark theme' }).click()
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark')
+
+  await page.reload()
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark')
+
+  await page.getByRole('button', { name: 'Match system theme' }).click()
+  await expect(page.locator('html')).not.toHaveAttribute('data-theme', /.*/)
 })

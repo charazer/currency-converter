@@ -109,6 +109,14 @@ export function useConverter() {
     persist()
   }
 
+  /** Set both sides at once; going through the individual setters would trip the swap guard. */
+  function setPair(nextBase: string, nextQuote: string): void {
+    if (nextBase === nextQuote) return
+    base.value = nextBase
+    quote.value = nextQuote
+    persist()
+  }
+
   /** Swaps the currencies and the amounts together, so the displayed equation still holds. */
   function swap(): void {
     const carried = quoteAmount.value
@@ -138,6 +146,7 @@ export function useConverter() {
     setQuoteAmount,
     setBase,
     setQuote,
+    setPair,
     swap,
   }
 }

@@ -42,6 +42,7 @@ export function useRateHistory(
   return {
     points: computed(() => query.data.value ?? []),
     isLoading: query.isLoading,
+    isFetching: query.isFetching,
     isError: query.isError,
     error: query.error,
     refetch: query.refetch,

@@ -47,3 +47,21 @@
   --accent-contrast: #101014;
   --danger: #f2b8b5;
 }
+
+/* Duplicated deliberately: doing this in CSS rather than JS means no flash of the wrong theme. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    color-scheme: dark;
+
+    --shadow: 0 1px 2px rgb(0 0 0 / 30%), 0 8px 24px rgb(0 0 0 / 40%);
+
+    --bg: #101014;
+    --surface: #191920;
+    --text: #f2f2f5;
+    --text-muted: #a0a0ad;
+    --border: #2e2e38;
+    --accent: #9b9bf5;
+    --accent-contrast: #101014;
+    --danger: #f2b8b5;
+  }
+}

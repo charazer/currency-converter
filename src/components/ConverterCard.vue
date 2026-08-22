@@ -3,6 +3,8 @@ import { computed, onUnmounted, ref, watch } from 'vue'
 
 import AmountField from '@/components/AmountField.vue'
 import CurrencySelect from '@/components/CurrencySelect.vue'
+import FavouritePairs from '@/components/FavouritePairs.vue'
+import RateChart from '@/components/RateChart.vue'
 import RateNote from '@/components/RateNote.vue'
 import SwapButton from '@/components/SwapButton.vue'
 import { useConverter } from '@/composables/useConverter'
@@ -28,6 +30,7 @@ const {
   setQuoteAmount,
   setBase,
   setQuote,
+  setPair,
   swap,
 } = useConverter()
 
@@ -110,6 +113,10 @@ onUnmounted(() => clearTimeout(announceTimer))
     :error="error"
     @retry="refetch()"
   />
+
+  <RateChart :base="base" :quote="quote" :locale="locale" />
+
+  <FavouritePairs :base="base" :quote="quote" @select="(pair) => setPair(pair.base, pair.quote)" />
 
   <p class="sr-only" role="status" aria-live="polite">{{ announcement }}</p>
 </template>

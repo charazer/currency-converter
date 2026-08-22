@@ -1,4 +1,4 @@
-import { queryOptions } from '@tanstack/vue-query'
+import { keepPreviousData, queryOptions } from '@tanstack/vue-query'
 
 import { fetchCurrencies, fetchHistory, fetchRateTable } from './frankfurter'
 
@@ -38,4 +38,6 @@ export const historyQuery = (
     queryFn: ({ signal }) => fetchHistory(base, quote, from, to, signal),
     staleTime: HOUR,
     enabled,
+    // Switching range keeps the old series on screen instead of blanking the chart.
+    placeholderData: keepPreviousData,
   })

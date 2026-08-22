@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import ConverterCard from '@/components/ConverterCard.vue'
+import ThemeToggle from '@/components/ThemeToggle.vue'
 </script>
 
 <template>
   <div class="shell">
     <header class="head">
       <h1>Currency Converter</h1>
+      <ThemeToggle />
     </header>
     <main class="main">
       <ConverterCard />
@@ -22,13 +24,16 @@ import ConverterCard from '@/components/ConverterCard.vue'
 }
 
 .head {
+  display: flex;
+  gap: var(--space-3);
+  justify-content: space-between;
+  align-items: center;
   padding-block: var(--space-3);
 }
 
 h1 {
   font-size: var(--font-lg);
   font-weight: 600;
-  text-align: center;
 }
 
 .main {
