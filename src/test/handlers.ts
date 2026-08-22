@@ -41,11 +41,23 @@ export const historyFixture = [
   { date: '2026-08-20', base: 'EUR', quote: 'USD', rate: 1.1533 },
 ]
 
+/** The API serves any base; the fixture is EUR-based, so cross rates are derived from it. */
+export function ratesFor(base: string) {
+  const anchor = ratesFixture.find((entry) => entry.quote === base)
+  if (anchor === undefined) return []
+  return ratesFixture.map((entry) => ({
+    date: entry.date,
+    base,
+    quote: entry.quote,
+    rate: entry.rate / anchor.rate,
+  }))
+}
+
 export const handlers = [
   http.get(`${API_BASE}/currencies`, () => HttpResponse.json(currenciesFixture)),
   http.get(`${API_BASE}/rates`, ({ request }) => {
     const params = new URL(request.url).searchParams
     if (params.get('from') !== null) return HttpResponse.json(historyFixture)
-    return HttpResponse.json(ratesFixture)
+    return HttpResponse.json(ratesFor(params.get('base') ?? 'EUR'))
   }),
 ]

@@ -48,17 +48,18 @@ describe('parseAmount — locale matrix', () => {
 
 describe('parseAmount — separator ambiguity', () => {
   it.each([
-    // A lone group character with exactly three trailing digits keeps its locale meaning.
+    // The locale's own group character is always grouping, whatever follows it. Anything else
+    // would misread an edit made inside an already-grouped value.
     { locale: 'en-US', input: '1,234', expected: { integer: '1234', fraction: null } },
     { locale: 'de-DE', input: '1.234', expected: { integer: '1234', fraction: null } },
-    // ...but with any other digit count it can only sensibly be a decimal point.
-    { locale: 'en-US', input: '1,23', expected: { integer: '1', fraction: '23' } },
-    { locale: 'de-DE', input: '1,23', expected: { integer: '1', fraction: '23' } },
-    { locale: 'en-US', input: '1.234', expected: { integer: '1', fraction: '234' } },
-    { locale: 'de-DE', input: '1.2345', expected: { integer: '1', fraction: '2345' } },
+    { locale: 'en-US', input: '1,23', expected: { integer: '123', fraction: null } },
+    { locale: 'en-US', input: '1,2934', expected: { integer: '12934', fraction: null } },
+    { locale: 'de-DE', input: '1.2345', expected: { integer: '12345', fraction: null } },
     // The locale's own decimal character always wins.
     { locale: 'en-US', input: '1.5', expected: { integer: '1', fraction: '5' } },
+    { locale: 'en-US', input: '1.234', expected: { integer: '1', fraction: '234' } },
     { locale: 'de-DE', input: '1,5', expected: { integer: '1', fraction: '5' } },
+    { locale: 'de-DE', input: '1,23', expected: { integer: '1', fraction: '23' } },
     // A character that is neither the locale group nor decimal is taken as a decimal point.
     { locale: 'de-CH', input: '1,5', expected: { integer: '1', fraction: '5' } },
     { locale: 'en-US', input: '1\u066B5', expected: { integer: '1', fraction: '5' } },

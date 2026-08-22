@@ -54,7 +54,7 @@ export function parseAmount(input: string, symbols: NumberSymbols): ParseResult 
 
   if (digits.length > MAX_DIGITS) return { ok: false, reason: 'too-many-digits' }
 
-  const split = resolveDecimalPosition(separators, symbols, digits.length)
+  const split = resolveDecimalPosition(separators, symbols)
   if (split === 'invalid') return { ok: false, reason: 'multiple-decimals' }
 
   const all = digits.join('')
@@ -64,14 +64,13 @@ export function parseAmount(input: string, symbols: NumberSymbols): ParseResult 
 }
 
 /**
- * Decides which separator, if any, is the decimal point. A lone separator that is the locale's own
- * group character followed by exactly three digits stays a group separator, so `1,234` means one
- * thousand in en-US but `1,23` means one and a bit.
+ * Decides which separator, if any, is the decimal point. The locale's own group character is never
+ * a decimal point, otherwise editing inside an already-grouped value (`1,2934`) would be misread.
+ * Foreign separators stay lenient, so a pasted `1.234,56` still resolves in en-US.
  */
 function resolveDecimalPosition(
   separators: Separator[],
   symbols: NumberSymbols,
-  digitCount: number,
 ): number | null | 'invalid' {
   if (separators.length === 0) return null
 
@@ -79,29 +78,19 @@ function resolveDecimalPosition(
   if (distinct.size > 2) return 'invalid'
 
   if (distinct.size === 2) {
+    // In every real format the decimal point comes last, so the trailing separator wins.
     const last = separators[separators.length - 1]
     if (last === undefined) return 'invalid'
-    // Everything before the final separator must be the other, grouping character.
     const others = separators.slice(0, -1)
     if (others.some((separator) => separator.char === last.char)) return 'invalid'
     return last.digitsBefore
   }
 
-  if (separators.length > 1) {
-    const isGroupChar = separators[0]?.char === symbols.group
-    return isGroupChar ? null : 'invalid'
-  }
-
   const only = separators[0]
   if (only === undefined) return null
 
-  if (only.char === symbols.decimal) return only.digitsBefore
-
-  if (only.char === symbols.group) {
-    const trailing = digitCount - only.digitsBefore
-    const looksGrouped = only.digitsBefore > 0 && trailing === 3
-    return looksGrouped ? null : only.digitsBefore
-  }
+  if (only.char === symbols.group) return null
+  if (separators.length > 1) return 'invalid'
 
   return only.digitsBefore
 }

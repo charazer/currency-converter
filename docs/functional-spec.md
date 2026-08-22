@@ -23,8 +23,10 @@ derived from `Intl.NumberFormat(locale, {style:'currency', currency}).resolvedOp
 - Preserve a trailing decimal separator and trailing zeros while the field has focus
   (`1.` and `1.50` must not be eaten). Normalise to full precision on blur.
 - Restore the caret by counting significant digits before it, not raw string offset.
-- Accept both `.` and `,` as decimal separator on input regardless of locale, plus space/NBSP/`'`
-  as ignorable group separators. Ambiguity (`1,234`) resolves to the locale's own rule.
+- Accept both `.` and `,` as decimal separator on input, plus space/NBSP/`'` as ignorable group
+  separators. The locale's **own group character is always grouping**, never a decimal point —
+  otherwise editing inside an already-grouped value (`1,2934` in en-US) is misread. Where two
+  different separators appear, the last one is the decimal, so a pasted `1.234,56` still resolves.
 - Reject: multiple decimal separators, letters, `-` (no negative money), and any keystroke that
   would push the value past 15 digits (the field simply refuses it and the UI shows a hint).
 - Leading zeros are **preserved while typing** and normalised on blur. Rejecting them mid-keystroke

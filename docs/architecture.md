@@ -2,19 +2,19 @@
 
 ## Stack
 
-| Layer        | Choice                                                  | Notes                                                           |
-| ------------ | ------------------------------------------------------- | --------------------------------------------------------------- |
-| Build        | Vite 7                                                  | `base: '/currency-converter/'` for Pages                        |
-| Language     | TypeScript, `strict: true` + `noUncheckedIndexedAccess` | No `any`, no non-null `!`                                       |
-| UI           | Vue 3.5, `<script setup lang="ts">`                     | SPA, no SSR                                                     |
-| Routing      | none (single view)                                      | Add `vue-router` only if a history page is split out            |
-| State        | Composables + `pinia` for the converter store           | Pinia only where state is shared across ≥2 components           |
-| Server state | TanStack Query (`@tanstack/vue-query`)                  | Caching, retry, stale handling, dedupe                          |
-| Validation   | Zod                                                     | Parse API responses at the boundary                             |
-| Money        | decimal.js-light                                        | All rate math and rounding                                      |
-| Styling      | Plain CSS + `@layer` + custom properties                | No framework; small surface, full control over tokens           |
-| Icons        | `unplugin-icons` + Lucide                               | Tree-shaken inline SVG                                          |
-| Chart        | `unovis` or hand-rolled SVG sparkline                   | Prefer hand-rolled; only add a lib if axes/tooltips get painful |
+| Layer        | Choice                                                  | Notes                                                          |
+| ------------ | ------------------------------------------------------- | -------------------------------------------------------------- |
+| Build        | Vite 8                                                  | `base: '/currency-converter/'` for Pages                       |
+| Language     | TypeScript, `strict: true` + `noUncheckedIndexedAccess` | No `any`, no non-null `!`                                      |
+| UI           | Vue 3.5, `<script setup lang="ts">`                     | SPA, no SSR                                                    |
+| Routing      | none (single view)                                      | Add `vue-router` only if a history page is split out           |
+| State        | Composables with module-scoped refs                     | **No Pinia** — one shared store did not justify the dependency |
+| Server state | TanStack Query (`@tanstack/vue-query`)                  | Caching, retry, stale handling, dedupe                         |
+| Validation   | Zod                                                     | Parse API responses at the boundary                            |
+| Money        | decimal.js-light                                        | All rate math and rounding                                     |
+| Styling      | Plain CSS + custom properties                           | No framework; small surface, full control over tokens          |
+| Icons        | Inline SVG                                              | **No icon library** — two icons in total                       |
+| Chart        | Hand-rolled SVG sparkline                               | Only add a lib if axes/tooltips get painful                    |
 
 No UI component library — the app is ~6 components; a library would outweigh the app.
 
