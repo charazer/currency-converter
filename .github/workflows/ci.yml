@@ -4,46 +4,106 @@ on:
   push:
     branches: [main]
   pull_request:
-
-concurrency:
-  group: ci-${{ github.ref }}
-  cancel-in-progress: true
+  workflow_dispatch:
 
 permissions:
   contents: read
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  # Superseded pull requests are worth cancelling; a push to main might be mid-deploy.
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
   verify:
+    name: Lint, types & unit tests
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v7
-
-      - uses: pnpm/action-setup@v4
-
-      - uses: actions/setup-node@v7
-        with:
-          node-version-file: .nvmrc
-          cache: pnpm
-
-      - run: pnpm run ci
+      - uses: ./.github/actions/setup
 
       - run: pnpm run lint
-
       - run: pnpm run format:check
-
       - run: pnpm run typecheck
-
       - run: pnpm run test:unit:coverage
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+      - uses: ./.github/actions/setup
 
       - run: pnpm run build
 
-      - run: pnpm exec playwright install --with-deps chromium webkit
+      # The end-to-end tests run against this exact output, and so does the deploy.
+      - uses: actions/upload-artifact@v7
+        with:
+          name: dist
+          path: dist
+          retention-days: 1
+
+      - if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: dist
+
+  e2e:
+    name: End-to-end tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: build
+    steps:
+      - uses: actions/checkout@v7
+      - uses: ./.github/actions/setup
+
+      - uses: actions/download-artifact@v8
+        with:
+          name: dist
+          path: dist
+
+      # Downloading both browsers takes ~45s, which dwarfs the tests themselves.
+      - id: playwright-cache
+        uses: actions/cache@v6
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
+
+      - if: steps.playwright-cache.outputs.cache-hit != 'true'
+        run: pnpm exec playwright install --with-deps chromium webkit
+
+      # Cached browsers still need their system libraries on a fresh runner.
+      - if: steps.playwright-cache.outputs.cache-hit == 'true'
+        run: pnpm exec playwright install-deps chromium webkit
 
       - run: pnpm run test:e2e
 
       - if: failure()
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v7
         with:
           name: playwright-report
           path: playwright-report/
           retention-days: 7
+
+  deploy:
+    name: Deploy to GitHub Pages
+    # Manual runs are allowed from any branch, but only main is ever published.
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    needs: [verify, e2e]
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    concurrency:
+      group: pages
+      cancel-in-progress: false
+    steps:
+      # Publishes the artifact built and tested earlier in this run; nothing is rebuilt.
+      - id: deployment
+        uses: actions/deploy-pages@v5
