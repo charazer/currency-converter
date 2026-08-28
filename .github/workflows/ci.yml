@@ -51,10 +51,14 @@ jobs:
           path: dist
 
   e2e:
-    name: End-to-end tests
+    name: End-to-end tests (${{ matrix.project }})
     runs-on: ubuntu-latest
     timeout-minutes: 15
     needs: build
+    strategy:
+      fail-fast: false
+      matrix:
+        project: [chromium, webkit]
     steps:
       - uses: actions/checkout@v7
       - uses: ./.github/actions/setup
@@ -64,22 +68,26 @@ jobs:
           name: dist
           path: dist
 
-      # Downloading both browsers takes ~45s, which dwarfs the tests themselves.
       - id: playwright-cache
         uses: actions/cache@v6
         with:
           path: ~/.cache/ms-playwright
-          key: playwright-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
+          key: playwright-${{ runner.os }}-${{ matrix.project }}-${{ hashFiles('pnpm-lock.yaml') }}
 
       - if: steps.playwright-cache.outputs.cache-hit != 'true'
-        run: pnpm exec playwright install --with-deps chromium webkit
+        run: pnpm exec playwright install --with-deps ${{ matrix.project }}
 
-      - run: pnpm run test:e2e
+      # Measured: the browsers themselves cache, but their apt packages cannot, and the tests do
+      # not start without them. Running the two browsers in parallel is what actually saves time.
+      - if: steps.playwright-cache.outputs.cache-hit == 'true'
+        run: pnpm exec playwright install-deps ${{ matrix.project }}
+
+      - run: pnpm exec playwright test --project=${{ matrix.project }}
 
       - if: failure()
         uses: actions/upload-artifact@v7
         with:
-          name: playwright-report
+          name: playwright-report-${{ matrix.project }}
           path: playwright-report/
           retention-days: 7
 
