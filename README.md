@@ -26,7 +26,7 @@ layout-stability and content-security-policy checks.
 
 ## Prerequisites
 
-- Node.js 24 LTS (`nvm use` reads [.nvmrc](.nvmrc))
+- Node.js 26 LTS (`nvm use` reads [.nvmrc](.nvmrc))
 - pnpm 11 (`corepack enable`)
 
 ## Getting started
