@@ -53,7 +53,15 @@ function ratesFor(base: string) {
   }))
 }
 
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': '*',
+  'Access-Control-Allow-Headers': '*',
+}
+
 export const handlers = [
+  // happy-dom sends CORS preflights, which MSW v3 no longer answers automatically
+  http.options('*', () => new HttpResponse(null, { status: 204, headers: corsHeaders })),
   http.get(`${API_BASE}/currencies`, () => HttpResponse.json(currenciesFixture)),
   http.get(`${API_BASE}/rates`, ({ request }) => {
     const params = new URL(request.url).searchParams
